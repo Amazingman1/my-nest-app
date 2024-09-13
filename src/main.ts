@@ -9,10 +9,12 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { VersioningType } from '@nestjs/common';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
 import * as session from 'express-session';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.enableVersioning({
     type: VersioningType.URI,
   });
@@ -24,6 +26,9 @@ async function bootstrap() {
       cookie: { maxAge: 1000 * 60 * 60 * 24 * 7 },
     }),
   );
+  app.useStaticAssets(join(__dirname, 'images'), {
+    prefix: '/images',
+  });
   await app.listen(3000);
 }
 bootstrap();
